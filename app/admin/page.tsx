@@ -70,47 +70,187 @@ async function getRecentEnquiries() {
   });
 }
 
-// Generate monthly data for charts (last 6 months)
-function getChartData() {
-  const months = ["Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+// Generate dynamic chart data from database (last 6 months)
+async function getChartData() {
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
-  const enquiryData = months.map((month) => ({
-    month,
-    enquiries: Math.floor(Math.random() * 50) + 20,
-    conversions: Math.floor(Math.random() * 20) + 5,
+  // Get enquiry data by month
+  const enquiryData = await prisma.enquiry.groupBy({
+    by: ["createdAt"],
+    _count: {
+      id: true,
+    },
+    where: {
+      createdAt: {
+        gte: sixMonthsAgo,
+      },
+    },
+    orderBy: {
+      createdAt: "asc",
+    },
+  });
+
+  // Get conversion data
+  const conversionData = await prisma.enquiry.groupBy({
+    by: ["createdAt"],
+    _count: {
+      id: true,
+    },
+    where: {
+      createdAt: {
+        gte: sixMonthsAgo,
+      },
+      status: "CONVERTED",
+    },
+    orderBy: {
+      createdAt: "asc",
+    },
+  });
+
+  // Format monthly data
+  const months = [];
+  for (let i = 5; i >= 0; i--) {
+    const date = new Date();
+    date.setMonth(date.getMonth() - i);
+    const monthKey = date.toLocaleString("en-US", { month: "short" });
+    const monthStart = new Date(date.getFullYear(), date.getMonth(), 1);
+    const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+    const enquiriesCount = await prisma.enquiry.count({
+      where: {
+        createdAt: {
+          gte: monthStart,
+          lte: monthEnd,
+        },
+      },
+    });
+
+    const conversionsCount = await prisma.enquiry.count({
+      where: {
+        createdAt: {
+          gte: monthStart,
+          lte: monthEnd,
+        },
+        status: "CONVERTED",
+      },
+    });
+
+    months.push({
+      month: monthKey,
+      enquiries: enquiriesCount,
+      conversions: conversionsCount,
+    });
+  }
+
+  // Get top packages by enquiry count
+  const topPackages = await prisma.package.findMany({
+    include: {
+      _count: {
+        select: {
+          enquiries: true,
+        },
+      },
+    },
+    orderBy: {
+      enquiries: {
+        _count: "desc",
+      },
+    },
+    take: 5,
+    where: {
+      isActive: true,
+    },
+  });
+
+  const packageData = topPackages.map((pkg) => ({
+    name:
+      pkg.title.length > 20 ? pkg.title.substring(0, 20) + "..." : pkg.title,
+    bookings: pkg._count.enquiries,
   }));
 
-  const packageData = [
-    { name: "Kashmir Tour", bookings: 45 },
-    { name: "Goa Package", bookings: 38 },
-    { name: "Kerala Trip", bookings: 32 },
-    { name: "Rajasthan Tour", bookings: 28 },
-    { name: "Dubai Special", bookings: 25 },
-  ];
+  // Get popular destinations from package enquiries
+  const destinationStats = await prisma.enquiry.groupBy({
+    by: ["destination"],
+    _count: {
+      id: true,
+    },
+    where: {
+      destination: {
+        not: null,
+      },
+    },
+    orderBy: {
+      _count: {
+        id: "desc",
+      },
+    },
+    take: 4,
+  });
+
+  const otherDestinationsCount = await prisma.enquiry.count({
+    where: {
+      destination: {
+        notIn: destinationStats.map((d) => d.destination as string),
+      },
+    },
+  });
 
   const destinationData = [
-    { name: "Kashmir", value: 35 },
-    { name: "Goa", value: 25 },
-    { name: "Kerala", value: 20 },
-    { name: "Dubai", value: 12 },
-    { name: "Others", value: 8 },
+    ...destinationStats.map((stat) => ({
+      name: stat.destination || "Unknown",
+      value: stat._count.id,
+    })),
+    ...(otherDestinationsCount > 0
+      ? [{ name: "Others", value: otherDestinationsCount }]
+      : []),
   ];
 
-  const revenueData = months.map((month, idx) => ({
-    month,
-    revenue: (idx + 1) * 15000 + Math.floor(Math.random() * 10000),
-  }));
+  // Calculate revenue trend (using package starting prices as proxy)
+  const revenueData = [];
+  for (let i = 5; i >= 0; i--) {
+    const date = new Date();
+    date.setMonth(date.getMonth() - i);
+    const monthKey = date.toLocaleString("en-US", { month: "short" });
+    const monthStart = new Date(date.getFullYear(), date.getMonth(), 1);
+    const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0);
 
-  return { enquiryData, packageData, destinationData, revenueData };
+    const convertedEnquiries = await prisma.enquiry.findMany({
+      where: {
+        createdAt: {
+          gte: monthStart,
+          lte: monthEnd,
+        },
+        status: "CONVERTED",
+      },
+      include: {
+        package: {
+          select: {
+            startingPrice: true,
+          },
+        },
+      },
+    });
+
+    const monthRevenue = convertedEnquiries.reduce((total, enquiry) => {
+      return total + (enquiry.package?.startingPrice?.toNumber() || 50000); // Default package price if not found
+    }, 0);
+
+    revenueData.push({
+      month: monthKey,
+      revenue: monthRevenue,
+    });
+  }
+
+  return { enquiryData: months, packageData, destinationData, revenueData };
 }
 
 export default async function AdminDashboard() {
-  const [stats, recentEnquiries] = await Promise.all([
+  const [stats, recentEnquiries, chartData] = await Promise.all([
     getStats(),
     getRecentEnquiries(),
+    getChartData(),
   ]);
-
-  const chartData = getChartData();
 
   const statCards = [
     {
@@ -197,8 +337,12 @@ export default async function AdminDashboard() {
         {/* Charts Grid */}
         <div className="grid gap-6 md:grid-cols-2">
           <EnquiryChart data={chartData.enquiryData} />
-          <TopPackagesChart data={chartData.packageData} />
-          <DestinationPieChart data={chartData.destinationData} />
+          {chartData.packageData.length > 0 && (
+            <TopPackagesChart data={chartData.packageData} />
+          )}
+          {chartData.destinationData.length > 0 && (
+            <DestinationPieChart data={chartData.destinationData} />
+          )}
           <RevenueChart data={chartData.revenueData} />
         </div>
 

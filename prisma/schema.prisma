@@ -479,3 +479,24 @@ model SiteSeo {
 
   @@map("site_seo")
 }
+
+// ==================== NOTIFICATIONS ====================
+
+model Notification {
+  id          String   @id @default(cuid())
+  type        NotificationType
+  title       String
+  message     String   @db.Text
+  link        String?
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("notifications")
+}
+
+enum NotificationType {
+  ENQUIRY
+  REVIEW
+  SYSTEM
+}
