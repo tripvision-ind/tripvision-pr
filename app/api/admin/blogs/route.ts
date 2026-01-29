@@ -1,0 +1,88 @@
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
+import { auth } from "@/auth";
+
+export async function GET() {
+  const session = await auth();
+  if (!session?.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const blogs = await prisma.blog.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+
+    return NextResponse.json({ blogs });
+  } catch (error) {
+    console.error("Error fetching blogs:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch blogs" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  const session = await auth();
+  if (!session?.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const body = await request.json();
+    const {
+      title,
+      slug,
+      heroImage,
+      excerpt,
+      content,
+      author,
+      category,
+      tags,
+      isPublished,
+      metaTitle,
+      metaDescription,
+    } = body;
+
+    if (!title || !slug || !content) {
+      return NextResponse.json(
+        { error: "Title, slug, and content are required" },
+        { status: 400 },
+      );
+    }
+
+    const existing = await prisma.blog.findUnique({ where: { slug } });
+    if (existing) {
+      return NextResponse.json(
+        { error: "A blog with this slug already exists" },
+        { status: 400 },
+      );
+    }
+
+    const blog = await prisma.blog.create({
+      data: {
+        title,
+        slug,
+        heroImage: heroImage || "",
+        excerpt,
+        content,
+        author: author || "Admin",
+        category,
+        tags: tags || [],
+        isPublished: isPublished ?? false,
+        publishedAt: isPublished ? new Date() : null,
+        metaTitle,
+        metaDescription,
+      },
+    });
+
+    return NextResponse.json({ blog }, { status: 201 });
+  } catch (error) {
+    console.error("Error creating blog:", error);
+    return NextResponse.json(
+      { error: "Failed to create blog" },
+      { status: 500 },
+    );
+  }
+}

@@ -1,0 +1,481 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ==================== AUTHENTICATION ====================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  name          String?
+  role          Role      @default(ADMIN)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("users")
+}
+
+enum Role {
+  ADMIN
+}
+
+// ==================== PACKAGES ====================
+
+model Package {
+  id              String   @id @default(cuid())
+  title           String
+  slug            String   @unique
+  description     String   @db.Text
+  shortDescription String? @db.Text
+  heroImage       String
+  images          String[] // Array of image URLs
+  duration        String   // e.g., "5 Days / 4 Nights"
+  durationDays    Int
+  durationNights  Int
+  startingPrice   Decimal  @db.Decimal(10, 2)
+  discountedPrice Decimal? @db.Decimal(10, 2)
+  category        PackageCategory
+  isSpecial       Boolean  @default(false)
+  isFeatured      Boolean  @default(false)
+  isPopular       Boolean  @default(false)
+  isActive        Boolean  @default(true)
+  
+  // SEO
+  metaTitle       String?
+  metaDescription String?  @db.Text
+  
+  // Relations
+  itinerary       Itinerary[]
+  hotels          PackageHotel[]
+  meals           PackageMeal[]
+  transfers       PackageTransfer[]
+  sightseeing     PackageSightseeing[]
+  inclusions      PackageInclusion[]
+  exclusions      PackageExclusion[]
+  policies        PackagePolicy[]
+  activities      PackageActivity[]
+  destinations    PackageDestination[]
+  enquiries       Enquiry[]
+  prices          PackagePrice[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("packages")
+}
+
+enum PackageCategory {
+  DOMESTIC
+  INTERNATIONAL
+}
+
+model Itinerary {
+  id          String   @id @default(cuid())
+  packageId   String
+  package     Package  @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  day         Int
+  title       String
+  description String   @db.Text
+  images      String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("itineraries")
+}
+
+model PackageHotel {
+  id          String   @id @default(cuid())
+  packageId   String
+  package     Package  @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  name        String
+  location    String
+  starRating  Int?
+  nights      Int
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("package_hotels")
+}
+
+model PackageMeal {
+  id          String   @id @default(cuid())
+  packageId   String
+  package     Package  @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  type        MealType
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("package_meals")
+}
+
+enum MealType {
+  BREAKFAST
+  LUNCH
+  DINNER
+  ALL_MEALS
+}
+
+model PackageTransfer {
+  id          String   @id @default(cuid())
+  packageId   String
+  package     Package  @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  type        String   // e.g., "Airport Transfer", "City Transfer"
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("package_transfers")
+}
+
+model PackageSightseeing {
+  id          String   @id @default(cuid())
+  packageId   String
+  package     Package  @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  name        String
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("package_sightseeing")
+}
+
+model PackageInclusion {
+  id          String   @id @default(cuid())
+  packageId   String
+  package     Package  @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  item        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("package_inclusions")
+}
+
+model PackageExclusion {
+  id          String   @id @default(cuid())
+  packageId   String
+  package     Package  @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  item        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("package_exclusions")
+}
+
+model PackagePolicy {
+  id          String     @id @default(cuid())
+  packageId   String
+  package     Package    @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  type        PolicyType
+  title       String
+  description String     @db.Text
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("package_policies")
+}
+
+enum PolicyType {
+  CANCELLATION
+  BOOKING
+  PAYMENT
+  GENERAL
+}
+
+model PackageActivity {
+  id          String   @id @default(cuid())
+  packageId   String
+  package     Package  @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  name        String
+  description String?  @db.Text
+  price       Decimal? @db.Decimal(10, 2)
+  isOptional  Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("package_activities")
+}
+
+model PackagePrice {
+  id          String   @id @default(cuid())
+  packageId   String
+  package     Package  @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  currencyId  String
+  currency    Currency @relation(fields: [currencyId], references: [id])
+  price       Decimal  @db.Decimal(10, 2)
+  discountedPrice Decimal? @db.Decimal(10, 2)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([packageId, currencyId])
+  @@map("package_prices")
+}
+
+// ==================== DESTINATIONS ====================
+
+model Destination {
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  description     String   @db.Text
+  shortDescription String? @db.Text
+  heroImage       String
+  images          String[]
+  country         String
+  region          String?
+  isPopular       Boolean  @default(false)
+  isDomestic      Boolean  @default(true)
+  isFeatured      Boolean  @default(false)
+  isActive        Boolean  @default(true)
+  
+  // SEO
+  metaTitle       String?
+  metaDescription String?  @db.Text
+  
+  // Relations
+  packages        PackageDestination[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("destinations")
+}
+
+model PackageDestination {
+  id            String      @id @default(cuid())
+  packageId     String
+  package       Package     @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  destinationId String
+  destination   Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+
+  @@unique([packageId, destinationId])
+  @@map("package_destinations")
+}
+
+// ==================== BLOGS ====================
+
+model Blog {
+  id              String   @id @default(cuid())
+  title           String
+  slug            String   @unique
+  content         String   @db.Text
+  excerpt         String?  @db.Text
+  heroImage       String
+  images          String[]
+  author          String
+  category        String?
+  tags            String[]
+  isPublished     Boolean  @default(false)
+  isFeatured      Boolean  @default(false)
+  publishedAt     DateTime?
+  
+  // SEO
+  metaTitle       String?
+  metaDescription String?  @db.Text
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("blogs")
+}
+
+// ==================== REVIEWS ====================
+
+model Review {
+  id          String   @id @default(cuid())
+  name        String
+  email       String?
+  avatar      String?
+  rating      Int      @default(5)
+  title       String?
+  content     String   @db.Text
+  location    String?
+  tripType    String?  // e.g., "Honeymoon", "Family", "Adventure"
+  isApproved  Boolean  @default(false)
+  isFeatured  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("reviews")
+}
+
+// ==================== ENQUIRIES ====================
+
+model Enquiry {
+  id          String       @id @default(cuid())
+  name        String
+  email       String
+  phone       String
+  message     String?      @db.Text
+  source      EnquirySource @default(GENERAL)
+  packageId   String?
+  package     Package?     @relation(fields: [packageId], references: [id], onDelete: SetNull)
+  destination String?
+  travelDate  DateTime?
+  travelers   Int?
+  budget      String?
+  status      EnquiryStatus @default(NEW)
+  notes       String?      @db.Text
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@map("enquiries")
+}
+
+enum EnquirySource {
+  GENERAL
+  PACKAGE
+  QUICK_ENQUIRY
+  CONTACT_PAGE
+  HOMEPAGE
+}
+
+enum EnquiryStatus {
+  NEW
+  CONTACTED
+  IN_PROGRESS
+  CONVERTED
+  CLOSED
+}
+
+// ==================== CURRENCY ====================
+
+model Currency {
+  id          String   @id @default(cuid())
+  code        String   @unique // e.g., "INR", "USD", "EUR"
+  name        String   // e.g., "Indian Rupee", "US Dollar"
+  symbol      String   // e.g., "₹", "$", "€"
+  exchangeRate Decimal @db.Decimal(10, 4) @default(1)
+  isDefault   Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  packagePrices PackagePrice[]
+
+  @@map("currencies")
+}
+
+// ==================== SITE SETTINGS ====================
+
+model SiteSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String   @db.Text
+  type        SettingType @default(TEXT)
+  category    String   @default("general")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("site_settings")
+}
+
+enum SettingType {
+  TEXT
+  TEXTAREA
+  NUMBER
+  BOOLEAN
+  JSON
+  IMAGE
+}
+
+// ==================== FAQ ====================
+
+model FAQ {
+  id          String   @id @default(cuid())
+  question    String
+  answer      String   @db.Text
+  category    String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("faqs")
+}
+
+// ==================== SERVICES ====================
+
+model Service {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String   @db.Text
+  shortDescription String? @db.Text
+  icon        String?
+  image       String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("services")
+}
+
+// ==================== CONTACT INFO ====================
+
+model BranchOffice {
+  id          String   @id @default(cuid())
+  name        String
+  address     String   @db.Text
+  city        String
+  country     String
+  phones      String[]
+  emails      String[]
+  mapUrl      String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("branch_offices")
+}
+
+model SocialLink {
+  id          String   @id @default(cuid())
+  platform    String   // e.g., "facebook", "instagram", "twitter"
+  url         String
+  icon        String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("social_links")
+}
+
+// ==================== SEO SETTINGS ====================
+
+model SiteSeo {
+  id              String   @id @default(cuid())
+  route           String   @unique // e.g., "/", "/about", "/contact", "/packages", "/destinations"
+  pageTitle       String   // Page title
+  metaTitle       String?  // SEO title (if different from page title)
+  metaDescription String?  @db.Text
+  metaKeywords    String?  @db.Text
+  ogTitle         String?
+  ogDescription   String?  @db.Text
+  ogImage         String?
+  twitterTitle    String?
+  twitterDescription String? @db.Text
+  twitterImage    String?
+  canonicalUrl    String?
+  robots          String?  @default("index, follow") // noindex, nofollow options
+  structuredData  String?  @db.Text // JSON-LD schema markup
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("site_seo")
+}

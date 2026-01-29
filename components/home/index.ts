@@ -1,0 +1,12 @@
+export { HeroSection } from "./hero-section";
+export { PopularDestinations } from "./popular-destinations";
+export { SpecialPackages } from "./special-packages";
+export { BlogsSection } from "./blogs-section";
+export { ReviewsSection } from "./reviews-section";
+export { CTASection } from "./cta-section";
+export { WhyChooseUs } from "./why-choose-us";
+export { StatsSection } from "./stats-section";
+export { AboutPreview } from "./about-preview";
+export { FeaturedPackages } from "./featured-packages";
+export { TrustBadges } from "./trust-badges";
+export { TourTypes } from "./tour-types";
