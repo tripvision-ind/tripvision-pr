@@ -64,14 +64,39 @@ interface Notification {
 const sidebarLinks = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, countKey: null },
   { href: "/admin/packages", label: "Packages", icon: Package, countKey: null },
-  { href: "/admin/destinations", label: "Destinations", icon: MapPin, countKey: null },
+  {
+    href: "/admin/destinations",
+    label: "Destinations",
+    icon: MapPin,
+    countKey: null,
+  },
   { href: "/admin/blogs", label: "Blogs", icon: FileText, countKey: null },
-  { href: "/admin/reviews", label: "Reviews", icon: Star, countKey: "reviews" as const },
-  { href: "/admin/enquiries", label: "Enquiries", icon: Mail, countKey: "enquiries" as const },
+  {
+    href: "/admin/reviews",
+    label: "Reviews",
+    icon: Star,
+    countKey: "reviews" as const,
+  },
+  {
+    href: "/admin/enquiries",
+    label: "Enquiries",
+    icon: Mail,
+    countKey: "enquiries" as const,
+  },
   { href: "/admin/faqs", label: "FAQs", icon: HelpCircle, countKey: null },
-  { href: "/admin/currencies", label: "Currencies", icon: DollarSign, countKey: null },
+  {
+    href: "/admin/currencies",
+    label: "Currencies",
+    icon: DollarSign,
+    countKey: null,
+  },
   { href: "/admin/seo", label: "SEO Settings", icon: Search, countKey: null },
-  { href: "/admin/settings", label: "Settings", icon: Settings, countKey: null },
+  {
+    href: "/admin/settings",
+    label: "Settings",
+    icon: Settings,
+    countKey: null,
+  },
 ];
 
 export function AdminShell({ children }: AdminShellProps) {
@@ -136,9 +161,7 @@ export function AdminShell({ children }: AdminShellProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ markAllRead: true }),
       });
-      setNotifications((prev) =>
-        prev.map((n) => ({ ...n, isRead: true }))
-      );
+      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
       setCounts((prev) => ({ ...prev, notifications: 0 }));
     } catch (error) {
       console.error("Failed to mark as read:", error);
@@ -199,7 +222,9 @@ export function AdminShell({ children }: AdminShellProps) {
                     </div>
                     {badgeCount > 0 && (
                       <Badge
-                        variant={pathname === link.href ? "secondary" : "destructive"}
+                        variant={
+                          pathname === link.href ? "secondary" : "destructive"
+                        }
                         className="ml-auto text-xs px-1.5 py-0.5 min-w-[20px] text-center"
                       >
                         {badgeCount > 99 ? "99+" : badgeCount}
@@ -301,7 +326,10 @@ export function AdminShell({ children }: AdminShellProps) {
 
           <div className="flex items-center gap-2">
             {/* Notification Bell */}
-            <DropdownMenu open={notificationOpen} onOpenChange={setNotificationOpen}>
+            <DropdownMenu
+              open={notificationOpen}
+              onOpenChange={setNotificationOpen}
+            >
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="relative">
                   <Bell className="size-5" />
@@ -339,7 +367,7 @@ export function AdminShell({ children }: AdminShellProps) {
                         href={notification.link || "#"}
                         className={cn(
                           "flex flex-col items-start gap-1 p-3 cursor-pointer",
-                          !notification.isRead && "bg-muted/50"
+                          !notification.isRead && "bg-muted/50",
                         )}
                       >
                         <div className="flex items-center gap-2">
@@ -354,7 +382,9 @@ export function AdminShell({ children }: AdminShellProps) {
                           {notification.message}
                         </span>
                         <span className="text-xs text-muted-foreground">
-                          {new Date(notification.createdAt).toLocaleDateString()}
+                          {new Date(
+                            notification.createdAt,
+                          ).toLocaleDateString()}
                         </span>
                       </Link>
                     </DropdownMenuItem>

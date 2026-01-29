@@ -49,7 +49,7 @@ interface SocialSettings {
 export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
-  
+
   const [brandSettings, setBrandSettings] = useState<BrandSettings>({
     name: BRAND.name,
     tagline: BRAND.tagline,
@@ -166,7 +166,10 @@ export default function SettingsPage() {
                       id="brandName"
                       value={brandSettings.name}
                       onChange={(e) =>
-                        setBrandSettings({ ...brandSettings, name: e.target.value })
+                        setBrandSettings({
+                          ...brandSettings,
+                          name: e.target.value,
+                        })
                       }
                     />
                   </div>
@@ -176,7 +179,10 @@ export default function SettingsPage() {
                       id="tagline"
                       value={brandSettings.tagline}
                       onChange={(e) =>
-                        setBrandSettings({ ...brandSettings, tagline: e.target.value })
+                        setBrandSettings({
+                          ...brandSettings,
+                          tagline: e.target.value,
+                        })
                       }
                     />
                   </div>
@@ -187,7 +193,10 @@ export default function SettingsPage() {
                     id="description"
                     value={brandSettings.description}
                     onChange={(e) =>
-                      setBrandSettings({ ...brandSettings, description: e.target.value })
+                      setBrandSettings({
+                        ...brandSettings,
+                        description: e.target.value,
+                      })
                     }
                     rows={3}
                   />
@@ -223,7 +232,10 @@ export default function SettingsPage() {
                       id="primaryPhone"
                       value={contactSettings.primaryPhone}
                       onChange={(e) =>
-                        setContactSettings({ ...contactSettings, primaryPhone: e.target.value })
+                        setContactSettings({
+                          ...contactSettings,
+                          primaryPhone: e.target.value,
+                        })
                       }
                     />
                   </div>
@@ -233,7 +245,10 @@ export default function SettingsPage() {
                       id="secondaryPhone"
                       value={contactSettings.secondaryPhone}
                       onChange={(e) =>
-                        setContactSettings({ ...contactSettings, secondaryPhone: e.target.value })
+                        setContactSettings({
+                          ...contactSettings,
+                          secondaryPhone: e.target.value,
+                        })
                       }
                     />
                   </div>
@@ -246,7 +261,10 @@ export default function SettingsPage() {
                       type="email"
                       value={contactSettings.primaryEmail}
                       onChange={(e) =>
-                        setContactSettings({ ...contactSettings, primaryEmail: e.target.value })
+                        setContactSettings({
+                          ...contactSettings,
+                          primaryEmail: e.target.value,
+                        })
                       }
                     />
                   </div>
@@ -257,7 +275,10 @@ export default function SettingsPage() {
                       type="email"
                       value={contactSettings.secondaryEmail}
                       onChange={(e) =>
-                        setContactSettings({ ...contactSettings, secondaryEmail: e.target.value })
+                        setContactSettings({
+                          ...contactSettings,
+                          secondaryEmail: e.target.value,
+                        })
                       }
                     />
                   </div>
@@ -268,7 +289,10 @@ export default function SettingsPage() {
                     id="whatsapp"
                     value={contactSettings.whatsappNumber}
                     onChange={(e) =>
-                      setContactSettings({ ...contactSettings, whatsappNumber: e.target.value })
+                      setContactSettings({
+                        ...contactSettings,
+                        whatsappNumber: e.target.value,
+                      })
                     }
                     placeholder="+91XXXXXXXXXX"
                   />
@@ -303,7 +327,10 @@ export default function SettingsPage() {
                     id="metaTitle"
                     value={seoSettings.metaTitle}
                     onChange={(e) =>
-                      setSeoSettings({ ...seoSettings, metaTitle: e.target.value })
+                      setSeoSettings({
+                        ...seoSettings,
+                        metaTitle: e.target.value,
+                      })
                     }
                   />
                 </div>
@@ -315,7 +342,10 @@ export default function SettingsPage() {
                     id="metaDescription"
                     value={seoSettings.metaDescription}
                     onChange={(e) =>
-                      setSeoSettings({ ...seoSettings, metaDescription: e.target.value })
+                      setSeoSettings({
+                        ...seoSettings,
+                        metaDescription: e.target.value,
+                      })
                     }
                     rows={3}
                   />
@@ -326,7 +356,10 @@ export default function SettingsPage() {
                     id="keywords"
                     value={seoSettings.keywords}
                     onChange={(e) =>
-                      setSeoSettings({ ...seoSettings, keywords: e.target.value })
+                      setSeoSettings({
+                        ...seoSettings,
+                        keywords: e.target.value,
+                      })
                     }
                     placeholder="travel, tours, vacation, packages"
                   />
@@ -360,7 +393,10 @@ export default function SettingsPage() {
                       id="facebook"
                       value={socialSettings.facebook}
                       onChange={(e) =>
-                        setSocialSettings({ ...socialSettings, facebook: e.target.value })
+                        setSocialSettings({
+                          ...socialSettings,
+                          facebook: e.target.value,
+                        })
                       }
                       placeholder="https://facebook.com/..."
                     />
@@ -371,7 +407,10 @@ export default function SettingsPage() {
                       id="instagram"
                       value={socialSettings.instagram}
                       onChange={(e) =>
-                        setSocialSettings({ ...socialSettings, instagram: e.target.value })
+                        setSocialSettings({
+                          ...socialSettings,
+                          instagram: e.target.value,
+                        })
                       }
                       placeholder="https://instagram.com/..."
                     />
@@ -384,7 +423,10 @@ export default function SettingsPage() {
                       id="twitter"
                       value={socialSettings.twitter}
                       onChange={(e) =>
-                        setSocialSettings({ ...socialSettings, twitter: e.target.value })
+                        setSocialSettings({
+                          ...socialSettings,
+                          twitter: e.target.value,
+                        })
                       }
                       placeholder="https://twitter.com/..."
                     />
@@ -395,7 +437,10 @@ export default function SettingsPage() {
                       id="youtube"
                       value={socialSettings.youtube}
                       onChange={(e) =>
-                        setSocialSettings({ ...socialSettings, youtube: e.target.value })
+                        setSocialSettings({
+                          ...socialSettings,
+                          youtube: e.target.value,
+                        })
                       }
                       placeholder="https://youtube.com/..."
                     />
@@ -407,7 +452,10 @@ export default function SettingsPage() {
                     id="linkedin"
                     value={socialSettings.linkedin}
                     onChange={(e) =>
-                      setSocialSettings({ ...socialSettings, linkedin: e.target.value })
+                      setSocialSettings({
+                        ...socialSettings,
+                        linkedin: e.target.value,
+                      })
                     }
                     placeholder="https://linkedin.com/..."
                   />

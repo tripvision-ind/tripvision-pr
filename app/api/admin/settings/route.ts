@@ -24,7 +24,8 @@ export async function GET(request: NextRequest) {
 
       return NextResponse.json({
         key: setting.key,
-        value: setting.type === "JSON" ? JSON.parse(setting.value) : setting.value,
+        value:
+          setting.type === "JSON" ? JSON.parse(setting.value) : setting.value,
       });
     }
 
@@ -33,7 +34,8 @@ export async function GET(request: NextRequest) {
     const formattedSettings: Record<string, unknown> = {};
 
     for (const setting of settings) {
-      formattedSettings[setting.key] = setting.type === "JSON" ? JSON.parse(setting.value) : setting.value;
+      formattedSettings[setting.key] =
+        setting.type === "JSON" ? JSON.parse(setting.value) : setting.value;
     }
 
     return NextResponse.json(formattedSettings);
@@ -41,7 +43,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching settings:", error);
     return NextResponse.json(
       { error: "Failed to fetch settings" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -60,7 +62,7 @@ export async function POST(request: NextRequest) {
     if (!key || value === undefined) {
       return NextResponse.json(
         { error: "Key and value are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -81,13 +83,14 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       key: setting.key,
-      value: setting.type === "JSON" ? JSON.parse(setting.value) : setting.value,
+      value:
+        setting.type === "JSON" ? JSON.parse(setting.value) : setting.value,
     });
   } catch (error) {
     console.error("Error saving settings:", error);
     return NextResponse.json(
       { error: "Failed to save settings" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -127,7 +130,7 @@ export async function PUT(request: NextRequest) {
     console.error("Error updating settings:", error);
     return NextResponse.json(
       { error: "Failed to update settings" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
