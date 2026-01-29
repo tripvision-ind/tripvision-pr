@@ -224,7 +224,7 @@ export default function AdminLoginPage() {
           </form>
 
           {/* Register Link */}
-          <div className="mt-6 text-center">
+          {/* <div className="mt-6 text-center">
             <p className="text-muted-foreground">
               Don&apos;t have an account?{" "}
               <Link
@@ -234,7 +234,7 @@ export default function AdminLoginPage() {
                 Register
               </Link>
             </p>
-          </div>
+          </div> */}
 
           {/* Back to Home */}
           <div className="mt-6 text-center">

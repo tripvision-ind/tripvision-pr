@@ -9,6 +9,12 @@ export const metadata: Metadata = {
   title: "TripVision - Your Dream Destinations Await",
   description:
     "Discover amazing travel packages, destinations, and experiences with TripVision. Book your next adventure today!",
+  icons: {
+    icon: "/favicon_io/favicon.ico",
+    shortcut: "/favicon_io/favicon.ico",
+    apple: "/favicon_io/apple-touch-icon.png",
+  },
+  manifest: "/favicon_io/site.webmanifest",
 };
 
 export default function RootLayout({
