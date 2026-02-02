@@ -125,20 +125,20 @@ export function ImageUpload({
       )}
     >
       <input {...getInputProps()} />
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-4">
+      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-2">
         {isUploading ? (
           <>
-            <Loader2 className="size-8 animate-spin text-muted-foreground" />
-            <p className="text-sm text-muted-foreground">Uploading...</p>
+            <Loader2 className="size-6 animate-spin text-muted-foreground" />
+            <p className="text-xs text-muted-foreground">Uploading...</p>
           </>
         ) : (
           <>
             {isDragActive ? (
-              <Upload className="size-8 text-primary" />
+              <Upload className="size-6 text-primary" />
             ) : (
-              <ImageIcon className="size-8 text-muted-foreground" />
+              <ImageIcon className="size-6 text-muted-foreground" />
             )}
-            <p className="text-sm text-muted-foreground text-center">
+            <p className="text-xs text-muted-foreground text-center">
               {isDragActive
                 ? "Drop image here"
                 : "Drag & drop or click to upload"}

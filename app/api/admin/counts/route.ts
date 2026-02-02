@@ -17,6 +17,7 @@ export async function GET() {
       totalPackages,
       totalDestinations,
       totalBlogs,
+      totalServices,
     ] = await Promise.all([
       prisma.enquiry.count({ where: { status: "NEW" } }),
       prisma.review.count({ where: { isApproved: false } }),
@@ -24,6 +25,7 @@ export async function GET() {
       prisma.package.count(),
       prisma.destination.count(),
       prisma.blog.count(),
+      prisma.service.count(),
     ]);
 
     return NextResponse.json({
@@ -33,6 +35,7 @@ export async function GET() {
       packages: totalPackages,
       destinations: totalDestinations,
       blogs: totalBlogs,
+      services: totalServices,
     });
   } catch (error) {
     console.error("Error fetching counts:", error);

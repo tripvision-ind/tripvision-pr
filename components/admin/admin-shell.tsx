@@ -36,6 +36,7 @@ import {
   Search,
   Bell,
   Check,
+  Cog,
 } from "lucide-react";
 
 interface AdminShellProps {
@@ -49,6 +50,7 @@ interface Counts {
   packages: number;
   destinations: number;
   blogs: number;
+  services: number;
 }
 
 interface Notification {
@@ -83,6 +85,12 @@ const sidebarLinks = [
     icon: Mail,
     countKey: "enquiries" as const,
   },
+  {
+    href: "/admin/services",
+    label: "Services",
+    icon: Cog,
+    countKey: "services" as const,
+  },
   { href: "/admin/faqs", label: "FAQs", icon: HelpCircle, countKey: null },
   {
     href: "/admin/currencies",
@@ -110,6 +118,7 @@ export function AdminShell({ children }: AdminShellProps) {
     packages: 0,
     destinations: 0,
     blogs: 0,
+    services: 0,
   });
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [notificationOpen, setNotificationOpen] = useState(false);

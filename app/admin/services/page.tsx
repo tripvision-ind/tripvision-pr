@@ -14,6 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Plus, Pencil, GripVertical } from "lucide-react";
+import { ServiceActions } from "./service-actions";
 
 async function getServices() {
   return prisma.service.findMany({
@@ -46,8 +47,9 @@ export default async function ServicesAdminPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[50px]"></TableHead>
+                <TableHead className="w-12"></TableHead>
                 <TableHead>Title</TableHead>
+                <TableHead>Image</TableHead>
                 <TableHead>Icon</TableHead>
                 <TableHead>Description</TableHead>
                 <TableHead>Status</TableHead>
@@ -57,7 +59,7 @@ export default async function ServicesAdminPage() {
             <TableBody>
               {services.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8">
+                  <TableCell colSpan={7} className="text-center py-8">
                     <p className="text-muted-foreground">No services yet</p>
                     <Button asChild variant="link" className="mt-2">
                       <Link href="/admin/services/new">
@@ -76,11 +78,28 @@ export default async function ServicesAdminPage() {
                       {service.title}
                     </TableCell>
                     <TableCell>
+                      {service.image ? (
+                        <div className="w-12 h-12 rounded-md overflow-hidden bg-muted">
+                          <img
+                            src={service.image}
+                            alt={service.title}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-12 h-12 rounded-md bg-muted flex items-center justify-center">
+                          <span className="text-xs text-muted-foreground">
+                            No image
+                          </span>
+                        </div>
+                      )}
+                    </TableCell>
+                    <TableCell>
                       {service.icon && (
                         <Badge variant="outline">{service.icon}</Badge>
                       )}
                     </TableCell>
-                    <TableCell className="max-w-[200px] truncate text-muted-foreground">
+                    <TableCell className="max-w-50 truncate text-muted-foreground">
                       {service.shortDescription || "-"}
                     </TableCell>
                     <TableCell>
@@ -91,11 +110,7 @@ export default async function ServicesAdminPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button asChild variant="ghost" size="icon">
-                        <Link href={`/admin/services/${service.id}`}>
-                          <Pencil className="size-4" />
-                        </Link>
-                      </Button>
+                      <ServiceActions serviceId={service.id} />
                     </TableCell>
                   </TableRow>
                 ))

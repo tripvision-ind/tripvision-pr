@@ -13,7 +13,7 @@ import {
   Youtube,
   Linkedin,
 } from "lucide-react";
-import { BRAND, CONTACT, BRANCH_OFFICES, SOCIAL_LINKS } from "@/lib/constants";
+import { BRANCH_OFFICES } from "@/lib/constants";
 
 interface Destination {
   id: string;
@@ -27,20 +27,66 @@ const CURRENT_YEAR = 2026;
 
 export function Footer() {
   const [destinations, setDestinations] = useState<Destination[]>([]);
+  const [socialLinks, setSocialLinks] = useState({
+    facebook: "",
+    instagram: "",
+    twitter: "",
+    youtube: "",
+    linkedin: "",
+  });
+  const [brandInfo, setBrandInfo] = useState({
+    name: "TripVision",
+    tagline: "",
+    description: "",
+    experience: "30+",
+  });
+  const [contactInfo, setContactInfo] = useState({
+    primaryPhone: "",
+    secondaryPhone: "",
+    primaryEmail: "",
+  });
 
   useEffect(() => {
-    async function fetchDestinations() {
+    async function fetchData() {
       try {
-        const response = await fetch("/api/destinations");
-        if (response.ok) {
-          const data = await response.json();
-          setDestinations(data);
+        // Fetch destinations
+        const destResponse = await fetch("/api/destinations");
+        if (destResponse.ok) {
+          const destData = await destResponse.json();
+          setDestinations(destData);
+        }
+
+        // Fetch social links from settings
+        const socialResponse = await fetch("/api/admin/settings?key=social");
+        if (socialResponse.ok) {
+          const socialData = await socialResponse.json();
+          if (socialData.value) {
+            setSocialLinks(socialData.value);
+          }
+        }
+
+        // Fetch brand settings
+        const brandResponse = await fetch("/api/admin/settings?key=brand");
+        if (brandResponse.ok) {
+          const brandData = await brandResponse.json();
+          if (brandData.value) {
+            setBrandInfo((prev) => ({ ...prev, ...brandData.value }));
+          }
+        }
+
+        // Fetch contact settings
+        const contactResponse = await fetch("/api/admin/settings?key=contact");
+        if (contactResponse.ok) {
+          const contactData = await contactResponse.json();
+          if (contactData.value) {
+            setContactInfo(contactData.value);
+          }
         }
       } catch (error) {
-        console.error("Failed to fetch destinations:", error);
+        console.error("Failed to fetch data:", error);
       }
     }
-    fetchDestinations();
+    fetchData();
   }, []);
 
   // Group destinations by type
@@ -61,63 +107,73 @@ export function Footer() {
             <div className="flex items-center gap-2">
               <Image
                 src="/vision.png"
-                alt={BRAND.name}
+                alt={brandInfo.name}
                 width={120}
                 height={40}
                 className="h-10 w-auto object-contain"
               />
             </div>
             <p className="text-gray-300 text-sm leading-relaxed">
-              With over {BRAND.experience} years of experience, we craft
+              With over {brandInfo.experience} years of experience, we craft
               unforgettable travel experiences tailored to your desires. Your
               journey, our passion.
             </p>
             <div className="flex items-center gap-3 pt-2">
-              <Link
-                href={SOCIAL_LINKS.facebook}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 rounded-full bg-white/10 hover:bg-primary hover:text-primary-foreground transition-colors"
-                aria-label="Facebook"
-              >
-                <Facebook className="size-4" />
-              </Link>
-              <Link
-                href={SOCIAL_LINKS.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 rounded-full bg-white/10 hover:bg-primary hover:text-primary-foreground transition-colors"
-                aria-label="Instagram"
-              >
-                <Instagram className="size-4" />
-              </Link>
-              <Link
-                href={SOCIAL_LINKS.twitter}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 rounded-full bg-white/10 hover:bg-primary hover:text-primary-foreground transition-colors"
-                aria-label="Twitter"
-              >
-                <Twitter className="size-4" />
-              </Link>
-              <Link
-                href={SOCIAL_LINKS.youtube}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 rounded-full bg-white/10 hover:bg-primary hover:text-primary-foreground transition-colors"
-                aria-label="YouTube"
-              >
-                <Youtube className="size-4" />
-              </Link>
-              <Link
-                href={SOCIAL_LINKS.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 rounded-full bg-white/10 hover:bg-primary hover:text-primary-foreground transition-colors"
-                aria-label="LinkedIn"
-              >
-                <Linkedin className="size-4" />
-              </Link>
+              {socialLinks.facebook && (
+                <Link
+                  href={socialLinks.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-full bg-white/10 hover:bg-primary hover:text-primary-foreground transition-colors"
+                  aria-label="Facebook"
+                >
+                  <Facebook className="size-4" />
+                </Link>
+              )}
+              {socialLinks.instagram && (
+                <Link
+                  href={socialLinks.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-full bg-white/10 hover:bg-primary hover:text-primary-foreground transition-colors"
+                  aria-label="Instagram"
+                >
+                  <Instagram className="size-4" />
+                </Link>
+              )}
+              {socialLinks.twitter && (
+                <Link
+                  href={socialLinks.twitter}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-full bg-white/10 hover:bg-primary hover:text-primary-foreground transition-colors"
+                  aria-label="Twitter"
+                >
+                  <Twitter className="size-4" />
+                </Link>
+              )}
+              {socialLinks.youtube && (
+                <Link
+                  href={socialLinks.youtube}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-full bg-white/10 hover:bg-primary hover:text-primary-foreground transition-colors"
+                  aria-label="YouTube"
+                >
+                  <Youtube className="size-4" />
+                </Link>
+              )}
+              {socialLinks.linkedin && (
+                <Link
+                  href={socialLinks.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-full bg-white/10 hover:bg-primary hover:text-primary-foreground transition-colors"
+                  aria-label="LinkedIn"
+                >
+                  <Linkedin className="size-4" />
+                </Link>
+              )}
             </div>
           </div>
 
@@ -257,31 +313,37 @@ export function Footer() {
                 </span>
               </li>
               <li>
-                <Link
-                  href={`tel:${CONTACT.primaryPhone.replace(/\s/g, "")}`}
-                  className="flex items-center gap-3 text-gray-300 hover:text-primary transition-colors text-sm"
-                >
-                  <Phone className="size-4 text-primary shrink-0" />
-                  {CONTACT.primaryPhone}
-                </Link>
+                {contactInfo.primaryPhone && (
+                  <Link
+                    href={`tel:${contactInfo.primaryPhone.replace(/\s/g, "")}`}
+                    className="flex items-center gap-3 text-gray-300 hover:text-primary transition-colors text-sm"
+                  >
+                    <Phone className="size-4 text-primary shrink-0" />
+                    {contactInfo.primaryPhone}
+                  </Link>
+                )}
               </li>
               <li>
-                <Link
-                  href={`tel:${CONTACT.secondaryPhone.replace(/\s/g, "")}`}
-                  className="flex items-center gap-3 text-gray-300 hover:text-primary transition-colors text-sm"
-                >
-                  <Phone className="size-4 text-primary shrink-0" />
-                  {CONTACT.secondaryPhone}
-                </Link>
+                {contactInfo.secondaryPhone && (
+                  <Link
+                    href={`tel:${contactInfo.secondaryPhone.replace(/\s/g, "")}`}
+                    className="flex items-center gap-3 text-gray-300 hover:text-primary transition-colors text-sm"
+                  >
+                    <Phone className="size-4 text-primary shrink-0" />
+                    {contactInfo.secondaryPhone}
+                  </Link>
+                )}
               </li>
               <li>
-                <Link
-                  href={`mailto:${CONTACT.primaryEmail}`}
-                  className="flex items-center gap-3 text-gray-300 hover:text-primary transition-colors text-sm"
-                >
-                  <Mail className="size-4 text-primary shrink-0" />
-                  {CONTACT.primaryEmail}
-                </Link>
+                {contactInfo.primaryEmail && (
+                  <Link
+                    href={`mailto:${contactInfo.primaryEmail}`}
+                    className="flex items-center gap-3 text-gray-300 hover:text-primary transition-colors text-sm"
+                  >
+                    <Mail className="size-4 text-primary shrink-0" />
+                    {contactInfo.primaryEmail}
+                  </Link>
+                )}
               </li>
             </ul>
           </div>
@@ -293,7 +355,7 @@ export function Footer() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-400">
             <p>
-              © {CURRENT_YEAR} {BRAND.name}. All rights reserved.
+              © {CURRENT_YEAR} {brandInfo.name}. All rights reserved.
             </p>
             <div className="flex items-center gap-4">
               <Link

@@ -14,7 +14,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BRAND, CONTACT, SOCIAL_LINKS } from "@/lib/constants";
 import { Loader2, Save, Check } from "lucide-react";
 import { toast } from "sonner";
 
@@ -51,31 +50,31 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState<string | null>(null);
 
   const [brandSettings, setBrandSettings] = useState<BrandSettings>({
-    name: BRAND.name,
-    tagline: BRAND.tagline,
-    description: BRAND.description,
+    name: "",
+    tagline: "",
+    description: "",
   });
 
   const [contactSettings, setContactSettings] = useState<ContactSettings>({
-    primaryPhone: CONTACT.primaryPhone,
-    secondaryPhone: CONTACT.secondaryPhone,
-    primaryEmail: CONTACT.primaryEmail,
-    secondaryEmail: CONTACT.secondaryEmail,
-    whatsappNumber: CONTACT.whatsappNumber,
+    primaryPhone: "",
+    secondaryPhone: "",
+    primaryEmail: "",
+    secondaryEmail: "",
+    whatsappNumber: "",
   });
 
   const [seoSettings, setSeoSettings] = useState<SeoSettings>({
-    metaTitle: `${BRAND.name} - ${BRAND.tagline}`,
-    metaDescription: BRAND.description,
+    metaTitle: "",
+    metaDescription: "",
     keywords: "",
   });
 
   const [socialSettings, setSocialSettings] = useState<SocialSettings>({
-    facebook: SOCIAL_LINKS.facebook,
-    instagram: SOCIAL_LINKS.instagram,
-    twitter: SOCIAL_LINKS.twitter,
-    youtube: SOCIAL_LINKS.youtube,
-    linkedin: SOCIAL_LINKS.linkedin,
+    facebook: "",
+    instagram: "",
+    twitter: "",
+    youtube: "",
+    linkedin: "",
   });
 
   // Load settings from API
