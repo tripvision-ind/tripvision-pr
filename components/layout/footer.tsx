@@ -370,6 +370,12 @@ export function Footer() {
               >
                 Terms of Service
               </Link>
+              <Link
+                href="/payment-policies"
+                className="hover:text-primary transition-colors"
+              >
+                Payment Policy
+              </Link>
             </div>
           </div>
         </div>
