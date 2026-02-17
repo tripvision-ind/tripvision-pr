@@ -23,6 +23,7 @@ import {
 import { ArrowLeft, Loader2, Save, Star, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
+import { ImageUpload } from "@/components/admin/image-upload";
 
 interface ReviewFormData {
   name: string;
@@ -313,17 +314,17 @@ export default function ReviewEditPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="avatar">Customer Avatar URL</Label>
-                    <Input
-                      id="avatar"
-                      placeholder="https://..."
+                    <Label>Customer Photo</Label>
+                    <ImageUpload
                       value={formData.avatar}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          avatar: e.target.value,
-                        }))
+                      onChange={(url) =>
+                        setFormData((prev) => ({ ...prev, avatar: url }))
                       }
+                      onRemove={() =>
+                        setFormData((prev) => ({ ...prev, avatar: "" }))
+                      }
+                      folder="reviews"
+                      aspectRatio="square"
                     />
                   </div>
                 </CardContent>

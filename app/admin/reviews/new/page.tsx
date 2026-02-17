@@ -9,26 +9,22 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { ArrowLeft, Loader2, Save, Star } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
+import { ImageUpload } from "@/components/admin/image-upload";
 
 export default function NewReviewPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    customerName: "",
-    customerImage: "",
+    name: "",
+    avatar: "",
     location: "",
     rating: 5,
-    comment: "",
+    title: "",
+    content: "",
+    tripType: "",
     isApproved: false,
     isFeatured: false,
   });
@@ -86,15 +82,15 @@ export default function NewReviewPage() {
                 <CardContent className="space-y-4">
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="customerName">Customer Name *</Label>
+                      <Label htmlFor="name">Customer Name *</Label>
                       <Input
-                        id="customerName"
+                        id="name"
                         placeholder="John Doe"
-                        value={formData.customerName}
+                        value={formData.name}
                         onChange={(e) =>
                           setFormData({
                             ...formData,
-                            customerName: e.target.value,
+                            name: e.target.value,
                           })
                         }
                         required
@@ -108,6 +104,34 @@ export default function NewReviewPage() {
                         value={formData.location}
                         onChange={(e) =>
                           setFormData({ ...formData, location: e.target.value })
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="title">Review Title</Label>
+                      <Input
+                        id="title"
+                        placeholder="Amazing Experience"
+                        value={formData.title}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            title: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="tripType">Trip Type</Label>
+                      <Input
+                        id="tripType"
+                        placeholder="Honeymoon, Family, Adventure"
+                        value={formData.tripType}
+                        onChange={(e) =>
+                          setFormData({ ...formData, tripType: e.target.value })
                         }
                       />
                     </div>
@@ -141,31 +165,31 @@ export default function NewReviewPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="comment">Review Comment *</Label>
+                    <Label htmlFor="content">Review Content *</Label>
                     <Textarea
-                      id="comment"
+                      id="content"
                       placeholder="Customer's review..."
                       rows={6}
-                      value={formData.comment}
+                      value={formData.content}
                       onChange={(e) =>
-                        setFormData({ ...formData, comment: e.target.value })
+                        setFormData({ ...formData, content: e.target.value })
                       }
                       required
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="customerImage">Customer Photo URL</Label>
-                    <Input
-                      id="customerImage"
-                      placeholder="https://..."
-                      value={formData.customerImage}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          customerImage: e.target.value,
-                        })
+                    <Label>Customer Photo</Label>
+                    <ImageUpload
+                      value={formData.avatar}
+                      onChange={(url) =>
+                        setFormData({ ...formData, avatar: url })
                       }
+                      onRemove={() =>
+                        setFormData({ ...formData, avatar: "" })
+                      }
+                      folder="reviews"
+                      aspectRatio="square"
                     />
                   </div>
                 </CardContent>
