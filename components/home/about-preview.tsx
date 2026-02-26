@@ -9,12 +9,12 @@ import { Button } from "@/components/ui/button";
 import { BRAND, ABOUT } from "@/lib/constants";
 
 const HIGHLIGHTS = [
-  "Customized travel packages tailored to your needs",
-  "Expert local guides with in-depth knowledge",
-  "24/7 customer support during your trip",
-  "Best price guarantee with no hidden costs",
-  "Safe and secure booking process",
-  "Hassle-free visa assistance",
+  "Transportation (Cars, Buses) Included in Our Packages",
+  "Hotel and Resort Stays",
+  "Sightseeing and Local Guides",
+  "Meals (as per itinerary)",
+  "Travel Insurance Options",
+  "24×7 Customer Support",
 ];
 
 export function AboutPreview() {

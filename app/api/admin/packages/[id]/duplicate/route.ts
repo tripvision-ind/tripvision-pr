@@ -29,6 +29,7 @@ export async function POST(
         policies: true,
         activities: true,
         prices: { include: { currency: true } },
+        dates: { orderBy: { startDate: "asc" } },
       },
     });
 
@@ -58,6 +59,7 @@ export async function POST(
         durationNights: originalPackage.durationNights,
         startingPrice: originalPackage.startingPrice,
         discountedPrice: originalPackage.discountedPrice,
+        priceLabel: originalPackage.priceLabel,
         category: originalPackage.category,
         isSpecial: false, // Disable for duplicates
         isFeatured: false,
@@ -138,6 +140,13 @@ export async function POST(
             discountedPrice: price.discountedPrice,
           })),
         },
+        dates: {
+          create: originalPackage.dates.map((date) => ({
+            startDate: date.startDate,
+            endDate: date.endDate,
+            label: date.label,
+          })),
+        },
       },
       include: {
         destinations: true,
@@ -151,6 +160,7 @@ export async function POST(
         policies: true,
         activities: true,
         prices: { include: { currency: true } },
+        dates: { orderBy: { startDate: "asc" } },
       },
     });
 

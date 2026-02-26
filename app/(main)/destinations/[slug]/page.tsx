@@ -182,16 +182,18 @@ export default async function DestinationPage({
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-110"
                     />
-                    {pkg.discountedPrice && (
-                      <Badge className="absolute top-4 left-4 bg-destructive text-white">
-                        {Math.round(
-                          ((pkg.startingPrice - pkg.discountedPrice) /
-                            pkg.startingPrice) *
-                            100,
-                        )}
-                        % OFF
-                      </Badge>
-                    )}
+                    {pkg.discountedPrice &&
+                      pkg.startingPrice > 0 &&
+                      pkg.discountedPrice < pkg.startingPrice && (
+                        <Badge className="absolute top-4 left-4 bg-destructive text-white">
+                          {Math.round(
+                            ((pkg.startingPrice - pkg.discountedPrice) /
+                              pkg.startingPrice) *
+                              100,
+                          )}
+                          % OFF
+                        </Badge>
+                      )}
                   </div>
                   <div className="p-5">
                     <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
@@ -205,60 +207,66 @@ export default async function DestinationPage({
                     </h3>
                     <div className="flex items-center justify-between">
                       <div>
-                        <span className="text-sm text-muted-foreground">
-                          From
-                        </span>
-                        <div className="flex items-center gap-2">
-                          {(() => {
-                            // Use package prices if available, otherwise fall back to startingPrice
-                            const packagePrice = pkg.prices?.[0];
-                            const displayPrice =
-                              packagePrice?.discountedPrice ||
-                              packagePrice?.price ||
-                              pkg.discountedPrice ||
-                              pkg.startingPrice;
-                            const originalPrice =
-                              packagePrice?.price || pkg.startingPrice;
-                            const currency = packagePrice?.currency || {
-                              code: "INR",
-                              symbol: "₹",
-                            };
+                        {(() => {
+                          const packagePrice = pkg.prices?.[0];
+                          const displayPrice =
+                            packagePrice?.discountedPrice ||
+                            packagePrice?.price ||
+                            pkg.discountedPrice ||
+                            pkg.startingPrice;
+                          const originalPrice =
+                            packagePrice?.price || pkg.startingPrice;
+                          const currency = packagePrice?.currency || {
+                            code: "INR",
+                            symbol: "₹",
+                          };
 
-                            const hasDiscount =
-                              (packagePrice?.discountedPrice &&
-                                packagePrice.discountedPrice <
-                                  packagePrice.price) ||
-                              (pkg.discountedPrice &&
-                                pkg.discountedPrice < pkg.startingPrice);
+                          const hasPrice = displayPrice > 0;
+                          if (!hasPrice) return null;
 
-                            return hasDiscount ? (
-                              <>
-                                <span className="text-xl font-bold text-primary">
-                                  {formatPrice(
-                                    displayPrice,
-                                    currency.code,
-                                    currency.symbol,
-                                  )}
-                                </span>
-                                <span className="text-sm text-muted-foreground line-through">
-                                  {formatPrice(
-                                    originalPrice,
-                                    currency.code,
-                                    currency.symbol,
-                                  )}
-                                </span>
-                              </>
-                            ) : (
-                              <span className="text-xl font-bold text-primary">
-                                {formatPrice(
-                                  displayPrice,
-                                  currency.code,
-                                  currency.symbol,
-                                )}
+                          const hasDiscount =
+                            (packagePrice?.discountedPrice &&
+                              packagePrice.discountedPrice <
+                                packagePrice.price) ||
+                            (pkg.discountedPrice &&
+                              pkg.discountedPrice < pkg.startingPrice);
+
+                          return (
+                            <>
+                              <span className="text-sm text-muted-foreground">
+                                From
                               </span>
-                            );
-                          })()}
-                        </div>
+                              <div className="flex items-center gap-2">
+                                {hasDiscount ? (
+                                  <>
+                                    <span className="text-xl font-bold text-primary">
+                                      {formatPrice(
+                                        displayPrice,
+                                        currency.code,
+                                        currency.symbol,
+                                      )}
+                                    </span>
+                                    <span className="text-sm text-muted-foreground line-through">
+                                      {formatPrice(
+                                        originalPrice,
+                                        currency.code,
+                                        currency.symbol,
+                                      )}
+                                    </span>
+                                  </>
+                                ) : (
+                                  <span className="text-xl font-bold text-primary">
+                                    {formatPrice(
+                                      displayPrice,
+                                      currency.code,
+                                      currency.symbol,
+                                    )}
+                                  </span>
+                                )}
+                              </div>
+                            </>
+                          );
+                        })()}
                       </div>
                     </div>
                   </div>

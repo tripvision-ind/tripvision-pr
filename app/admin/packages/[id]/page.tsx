@@ -45,6 +45,7 @@ import {
   XCircle,
   FileText,
   Sparkles,
+  CalendarDays,
 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -112,6 +113,12 @@ interface PackagePrice {
   discountedPrice: string;
 }
 
+interface BookingDate {
+  startDate: string;
+  endDate: string;
+  label: string;
+}
+
 const MEAL_TYPES = ["BREAKFAST", "LUNCH", "DINNER", "ALL_MEALS"];
 const POLICY_TYPES = ["CANCELLATION", "BOOKING", "PAYMENT", "GENERAL"];
 
@@ -156,6 +163,8 @@ export default function EditPackagePage() {
   const [policies, setPolicies] = useState<Policy[]>([]);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [prices, setPrices] = useState<PackagePrice[]>([]);
+  const [priceLabel, setPriceLabel] = useState("");
+  const [bookingDates, setBookingDates] = useState<BookingDate[]>([]);
 
   useEffect(() => {
     // Fetch destinations and currencies
@@ -213,6 +222,18 @@ export default function EditPackagePage() {
                 ? String(p.discountedPrice)
                 : "",
             })) || [],
+          );
+          setPriceLabel(pkg.priceLabel || "");
+          setBookingDates(
+            (pkg.dates || []).map((d: any) => ({
+              startDate: d.startDate
+                ? new Date(d.startDate).toISOString().split("T")[0]
+                : "",
+              endDate: d.endDate
+                ? new Date(d.endDate).toISOString().split("T")[0]
+                : "",
+              label: d.label || "",
+            })),
           );
         }
         setIsFetching(false);
@@ -355,6 +376,17 @@ export default function EditPackagePage() {
     if (prices.length > 1) setPrices(prices.filter((_, i) => i !== index));
   };
 
+  const addBookingDate = () => {
+    setBookingDates([
+      ...bookingDates,
+      { startDate: "", endDate: "", label: "" },
+    ]);
+  };
+
+  const removeBookingDate = (index: number) => {
+    setBookingDates(bookingDates.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -365,6 +397,7 @@ export default function EditPackagePage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
+          priceLabel: priceLabel || null,
           itinerary,
           hotels,
           meals,
@@ -375,6 +408,7 @@ export default function EditPackagePage() {
           policies,
           activities,
           prices: prices.filter((p) => p.price),
+          bookingDates: bookingDates.filter((d) => d.startDate),
         }),
       });
 
@@ -1317,6 +1351,27 @@ export default function EditPackagePage() {
                     )}
                   </CardHeader>
                   <CardContent className="space-y-4">
+                    {/* Price Label */}
+                    <div className="space-y-2 border rounded-lg p-4 bg-muted/30">
+                      <Label>Price Label</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Specify how the price applies (e.g., per person, per
+                        group, per couple)
+                      </p>
+                      <Select value={priceLabel} onValueChange={setPriceLabel}>
+                        <SelectTrigger className="w-64">
+                          <SelectValue placeholder="Select price label" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="per person">Per Person</SelectItem>
+                          <SelectItem value="per couple">Per Couple</SelectItem>
+                          <SelectItem value="per group">Per Group</SelectItem>
+                          <SelectItem value="per room">Per Room</SelectItem>
+                          <SelectItem value="per family">Per Family</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
                     {prices.map((price, index) => {
                       const currency = currencies.find(
                         (c) => c.id === price.currencyId,
@@ -1410,6 +1465,91 @@ export default function EditPackagePage() {
                     {prices.length === 0 && (
                       <p className="text-center text-muted-foreground py-4">
                         Add at least one currency to set pricing
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Booking Dates */}
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between">
+                    <div>
+                      <CardTitle>Available Dates</CardTitle>
+                      <CardDescription>
+                        Add dates or date ranges when this package is available
+                        for booking
+                      </CardDescription>
+                    </div>
+                    <Button type="button" size="sm" onClick={addBookingDate}>
+                      <Plus className="size-4 mr-2" />
+                      Add Date
+                    </Button>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {bookingDates.map((bd, index) => (
+                      <div
+                        key={index}
+                        className="border rounded-lg p-4 space-y-3"
+                      >
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium flex items-center gap-2">
+                            <CalendarDays className="size-4" />
+                            Date {index + 1}
+                          </span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeBookingDate(index)}
+                          >
+                            <Trash2 className="size-4" />
+                          </Button>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="space-y-2">
+                            <Label>Start Date *</Label>
+                            <Input
+                              type="date"
+                              value={bd.startDate}
+                              onChange={(e) => {
+                                const updated = [...bookingDates];
+                                updated[index].startDate = e.target.value;
+                                setBookingDates(updated);
+                              }}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>End Date (optional for range)</Label>
+                            <Input
+                              type="date"
+                              value={bd.endDate}
+                              min={bd.startDate}
+                              onChange={(e) => {
+                                const updated = [...bookingDates];
+                                updated[index].endDate = e.target.value;
+                                setBookingDates(updated);
+                              }}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Label (optional)</Label>
+                            <Input
+                              placeholder="e.g., Batch 1, Weekend Special"
+                              value={bd.label}
+                              onChange={(e) => {
+                                const updated = [...bookingDates];
+                                updated[index].label = e.target.value;
+                                setBookingDates(updated);
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    {bookingDates.length === 0 && (
+                      <p className="text-center text-muted-foreground py-4">
+                        No booking dates added. Click &quot;Add Date&quot; to
+                        add available dates.
                       </p>
                     )}
                   </CardContent>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Metadata } from "next";
+import Image from "next/image";
 import { CONTACT, BRANCH_OFFICES, BRAND } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -65,8 +65,16 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen">
       {/* Hero */}
-      <section className="bg-brand-dark py-16 lg:py-20">
-        <div className="container mx-auto px-4 text-center">
+      <section className="relative py-20 lg:py-28 overflow-hidden">
+        <Image
+          src="https://images.unsplash.com/photo-1596524430615-b46475ddff6e?w=1920&q=80"
+          alt="Contact Us"
+          fill
+          className="object-cover"
+          priority
+        />
+        <div className="absolute inset-0 bg-black/60" />
+        <div className="container mx-auto px-4 text-center relative z-10">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
             Contact Us
           </h1>

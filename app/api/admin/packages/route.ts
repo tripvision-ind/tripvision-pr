@@ -18,6 +18,7 @@ export async function GET() {
         prices: {
           include: { currency: true },
         },
+        dates: { orderBy: { startDate: "asc" } },
       },
     });
 
@@ -67,6 +68,7 @@ export async function POST(request: NextRequest) {
       policies,
       activities,
       prices,
+      bookingDates,
     } = body;
 
     if (!title || !slug || !description || !duration) {
@@ -91,6 +93,8 @@ export async function POST(request: NextRequest) {
         ? parseFloat(prices[0].discountedPrice)
         : null;
 
+    const priceLabel = body.priceLabel || null;
+
     const packageData = await prisma.package.create({
       data: {
         title,
@@ -104,6 +108,7 @@ export async function POST(request: NextRequest) {
         durationNights: durationNights || 0,
         startingPrice,
         discountedPrice,
+        priceLabel,
         category: category || "DOMESTIC",
         isSpecial: isSpecial ?? false,
         isFeatured: isFeatured ?? false,
@@ -248,6 +253,23 @@ export async function POST(request: NextRequest) {
               ),
           },
         }),
+        ...(bookingDates?.length > 0 && {
+          dates: {
+            create: bookingDates
+              .filter((d: { startDate: string }) => d.startDate)
+              .map(
+                (d: {
+                  startDate: string;
+                  endDate?: string;
+                  label?: string;
+                }) => ({
+                  startDate: new Date(d.startDate),
+                  endDate: d.endDate ? new Date(d.endDate) : null,
+                  label: d.label || null,
+                }),
+              ),
+          },
+        }),
       },
       include: {
         destinations: true,
@@ -261,6 +283,7 @@ export async function POST(request: NextRequest) {
         policies: true,
         activities: true,
         prices: { include: { currency: true } },
+        dates: { orderBy: { startDate: "asc" } },
       },
     });
 

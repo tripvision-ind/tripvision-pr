@@ -27,8 +27,16 @@ export default async function BlogsPage() {
   return (
     <div className="min-h-screen">
       {/* Hero */}
-      <section className="bg-brand-dark py-16 lg:py-20">
-        <div className="container mx-auto px-4 text-center">
+      <section className="relative py-20 lg:py-28 overflow-hidden">
+        <Image
+          src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1920&q=80"
+          alt="Travel Blog"
+          fill
+          className="object-cover"
+          priority
+        />
+        <div className="absolute inset-0 bg-black/60" />
+        <div className="container mx-auto px-4 text-center relative z-10">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
             Travel Blog
           </h1>

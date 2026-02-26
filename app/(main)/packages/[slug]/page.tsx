@@ -8,7 +8,7 @@ import { PackageDetails } from "@/components/packages/package-details";
 import { PackageEnquiryForm } from "@/components/packages/package-enquiry-form";
 import { PackageActions } from "@/components/packages/package-actions";
 import { formatPrice } from "@/lib/utils";
-import { Clock, MapPin, Users, Calendar } from "lucide-react";
+import { Clock, MapPin, Users, Calendar, CalendarDays } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface PackagePageProps {
@@ -34,6 +34,7 @@ async function getPackage(slug: string) {
       prices: {
         include: { currency: true },
       },
+      dates: { orderBy: { startDate: "asc" } },
     },
   });
 
@@ -55,6 +56,11 @@ async function getPackage(slug: string) {
         ...p.currency,
         exchangeRate: Number(p.currency.exchangeRate),
       },
+    })),
+    dates: pkg.dates.map((d) => ({
+      ...d,
+      startDate: d.startDate.toISOString(),
+      endDate: d.endDate ? d.endDate.toISOString() : null,
     })),
   };
 }
@@ -139,35 +145,60 @@ export default async function PackagePage({ params }: PackagePageProps) {
               <div className="sticky top-24 space-y-6">
                 {/* Price Card */}
                 <div className="bg-card rounded-2xl border p-6">
-                  <div className="mb-4">
-                    <span className="text-sm text-muted-foreground">
-                      Starting from
-                    </span>
-                    <div className="flex items-center gap-3">
-                      {(() => {
-                        // Use package prices if available, otherwise fall back to startingPrice
-                        const packagePrice = pkg.prices?.[0];
-                        const displayPrice =
-                          packagePrice?.discountedPrice ||
-                          packagePrice?.price ||
-                          pkg.discountedPrice ||
-                          pkg.startingPrice;
-                        const originalPrice =
-                          packagePrice?.price || pkg.startingPrice;
-                        const currency = packagePrice?.currency || {
-                          code: "INR",
-                          symbol: "₹",
-                        };
+                  {(() => {
+                    const packagePrice = pkg.prices?.[0];
+                    const displayPrice =
+                      packagePrice?.discountedPrice ||
+                      packagePrice?.price ||
+                      pkg.discountedPrice ||
+                      pkg.startingPrice;
+                    const originalPrice =
+                      packagePrice?.price || pkg.startingPrice;
+                    const currency = packagePrice?.currency || {
+                      code: "INR",
+                      symbol: "₹",
+                    };
 
-                        const hasDiscount =
-                          (packagePrice?.discountedPrice &&
-                            packagePrice.discountedPrice <
-                              packagePrice.price) ||
-                          (pkg.discountedPrice &&
-                            pkg.discountedPrice < pkg.startingPrice);
+                    const hasDiscount =
+                      (packagePrice?.discountedPrice &&
+                        packagePrice.discountedPrice < packagePrice.price) ||
+                      (pkg.discountedPrice &&
+                        pkg.discountedPrice < pkg.startingPrice);
 
-                        return hasDiscount ? (
-                          <>
+                    const hasPrice = displayPrice > 0;
+
+                    return hasPrice ? (
+                      <div className="mb-4">
+                        <span className="text-sm text-muted-foreground">
+                          Starting from
+                        </span>
+                        <div className="flex items-center gap-3">
+                          {hasDiscount ? (
+                            <>
+                              <span className="text-3xl font-bold text-primary">
+                                {formatPrice(
+                                  displayPrice,
+                                  currency.code,
+                                  currency.symbol,
+                                )}
+                              </span>
+                              <span className="text-lg text-muted-foreground line-through">
+                                {formatPrice(
+                                  originalPrice,
+                                  currency.code,
+                                  currency.symbol,
+                                )}
+                              </span>
+                              <Badge variant="destructive">
+                                {Math.round(
+                                  ((originalPrice - displayPrice) /
+                                    originalPrice) *
+                                    100,
+                                )}
+                                % OFF
+                              </Badge>
+                            </>
+                          ) : (
                             <span className="text-3xl font-bold text-primary">
                               {formatPrice(
                                 displayPrice,
@@ -175,37 +206,16 @@ export default async function PackagePage({ params }: PackagePageProps) {
                                 currency.symbol,
                               )}
                             </span>
-                            <span className="text-lg text-muted-foreground line-through">
-                              {formatPrice(
-                                originalPrice,
-                                currency.code,
-                                currency.symbol,
-                              )}
-                            </span>
-                            <Badge variant="destructive">
-                              {Math.round(
-                                ((originalPrice - displayPrice) /
-                                  originalPrice) *
-                                  100,
-                              )}
-                              % OFF
-                            </Badge>
-                          </>
-                        ) : (
-                          <span className="text-3xl font-bold text-primary">
-                            {formatPrice(
-                              displayPrice,
-                              currency.code,
-                              currency.symbol,
-                            )}
+                          )}
+                        </div>
+                        {pkg.priceLabel && (
+                          <span className="text-sm text-muted-foreground">
+                            {pkg.priceLabel}
                           </span>
-                        );
-                      })()}
-                    </div>
-                    <span className="text-sm text-muted-foreground">
-                      per person
-                    </span>
-                  </div>
+                        )}
+                      </div>
+                    ) : null;
+                  })()}
 
                   {/* Quick Info */}
                   <div className="grid grid-cols-2 gap-4 py-4 border-y">
@@ -228,6 +238,47 @@ export default async function PackagePage({ params }: PackagePageProps) {
                       </div>
                     </div>
                   </div>
+
+                  {/* Available Dates */}
+                  {pkg.dates && pkg.dates.length > 0 && (
+                    <div className="py-4 border-b">
+                      <div className="flex items-center gap-2 mb-3">
+                        <CalendarDays className="size-5 text-amber-500" />
+                        <span className="font-semibold text-sm">
+                          Available Dates
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {pkg.dates.map((d, i) => {
+                          const start = new Date(d.startDate);
+                          const end = d.endDate ? new Date(d.endDate) : null;
+                          const formatOpt: Intl.DateTimeFormatOptions = {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          };
+                          const dateText = end
+                            ? `${start.toLocaleDateString("en-IN", formatOpt)} – ${end.toLocaleDateString("en-IN", formatOpt)}`
+                            : start.toLocaleDateString("en-IN", formatOpt);
+                          return (
+                            <div
+                              key={i}
+                              className="inline-flex flex-col items-start gap-0.5 rounded-lg border border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700 px-3 py-1.5"
+                            >
+                              <span className="text-xs font-semibold text-amber-700 dark:text-amber-400 leading-tight">
+                                {dateText}
+                              </span>
+                              {d.label && (
+                                <span className="text-[10px] font-medium text-amber-500 dark:text-amber-500 uppercase tracking-wide leading-tight">
+                                  {d.label}
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Enquiry Form */}

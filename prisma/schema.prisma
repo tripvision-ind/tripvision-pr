@@ -43,6 +43,7 @@ model Package {
   durationNights  Int
   startingPrice   Decimal  @db.Decimal(10, 2)
   discountedPrice Decimal? @db.Decimal(10, 2)
+  priceLabel      String?  // e.g., "per person", "per group", "per couple"
   category        PackageCategory
   isSpecial       Boolean  @default(false)
   isFeatured      Boolean  @default(false)
@@ -66,6 +67,7 @@ model Package {
   destinations    PackageDestination[]
   enquiries       Enquiry[]
   prices          PackagePrice[]
+  dates           PackageDate[]
   
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -219,6 +221,19 @@ model PackagePrice {
 
   @@unique([packageId, currencyId])
   @@map("package_prices")
+}
+
+model PackageDate {
+  id          String    @id @default(cuid())
+  packageId   String
+  package     Package   @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  startDate   DateTime
+  endDate     DateTime? // null means single date, not a range
+  label       String?   // optional label like "Batch 1", "Weekend Special"
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("package_dates")
 }
 
 // ==================== DESTINATIONS ====================

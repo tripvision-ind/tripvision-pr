@@ -17,60 +17,46 @@ import { cn } from "@/lib/utils";
 
 const FEATURES = [
   {
-    icon: Shield,
-    title: "100% Safe Travel",
-    description:
-      "Your safety is our priority. All our tours are thoroughly vetted and insured.",
-    color: "bg-blue-500/10 text-blue-500",
-  },
-  {
-    icon: Award,
-    title: "30+ Years Experience",
-    description:
-      "Three decades of expertise in crafting unforgettable travel experiences.",
-    color: "bg-primary/10 text-primary",
-  },
-  {
-    icon: Users,
-    title: "Expert Tour Guides",
-    description:
-      "Knowledgeable local guides who bring destinations to life with stories.",
-    color: "bg-green-500/10 text-green-500",
-  },
-  {
     icon: HeartHandshake,
-    title: "Personalized Service",
+    title: "Professional & Personalised Service",
     description:
-      "Customized itineraries tailored to your preferences and travel style.",
+      "Tailored itineraries crafted to match your unique preferences, travel style, and budget requirements.",
     color: "bg-purple-500/10 text-purple-500",
   },
   {
-    icon: Clock,
-    title: "Flexible Booking",
+    icon: Award,
+    title: "India's Leading Travel Agency",
     description:
-      "Easy booking process with flexible cancellation and rescheduling options.",
-    color: "bg-orange-500/10 text-orange-500",
-  },
-  {
-    icon: Headphones,
-    title: "24/7 Support",
-    description:
-      "Round-the-clock assistance before, during, and after your trip.",
-    color: "bg-red-500/10 text-red-500",
-  },
-  {
-    icon: MapPin,
-    title: "Handpicked Destinations",
-    description:
-      "Carefully selected locations offering the best experiences and value.",
-    color: "bg-teal-500/10 text-teal-500",
+      "A trusted name in Indian travel with decades of expertise booking dream vacations across the country.",
+    color: "bg-primary/10 text-primary",
   },
   {
     icon: Wallet,
-    title: "Best Price Guarantee",
+    title: "Best Holiday Deals, Always",
     description:
-      "Competitive pricing with no hidden costs. Get the best value for your trip.",
-    color: "bg-indigo-500/10 text-indigo-500",
+      "Competitive pricing, exclusive deals, and the best value packages — no hidden costs, ever.",
+    color: "bg-green-500/10 text-green-500",
+  },
+  {
+    icon: Shield,
+    title: "Secure Transactions",
+    description:
+      "Book with complete confidence. Our platform ensures safe, encrypted, and hassle-free payment processing.",
+    color: "bg-blue-500/10 text-blue-500",
+  },
+  {
+    icon: Headphones,
+    title: "24/7 Customer Support",
+    description:
+      "Round-the-clock assistance before, during, and after your trip for complete peace of mind.",
+    color: "bg-red-500/10 text-red-500",
+  },
+  {
+    icon: Users,
+    title: "Expert Local Guides",
+    description:
+      "Knowledgeable guides who bring destinations to life with authentic local stories and experiences.",
+    color: "bg-orange-500/10 text-orange-500",
   },
 ];
 

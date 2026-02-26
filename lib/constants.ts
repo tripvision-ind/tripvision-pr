@@ -1,9 +1,9 @@
 // Brand Information
 export const BRAND = {
   name: "TripVision",
-  tagline: "Crafting Unforgettable Journeys",
+  tagline: "Turn Your Dream Holidays Into Unforgettable Memories",
   description:
-    "TripVision is a premier travel company with over 30 years of experience in crafting unforgettable journeys across the globe. We specialize in personalized travel experiences that cater to your unique preferences.",
+    "At Tripvision.in, we turn your dream holidays into unforgettable memories. As India's leading travel agency, we offer custom, budget-friendly travel experiences — from scenic hill stations and tropical islands to spiritual journeys across the subcontinent.",
   founded: 1994,
   experience: "30+",
   logo: "/logo.png",
@@ -64,16 +64,17 @@ export const BRANCH_OFFICES = [
 // About Content
 export const ABOUT = {
   short:
-    "At Trip Vision, we don't just plan trips—we craft unforgettable experiences tailored to your desires. Our personalized approach ensures every journey is unique, memorable, and meaningful.",
-  overview: `TRIP VISION is a tour operator company with over 30 years of experience, headquartered in Mumbai. We specialize in both domestic and international tour packages, offering Group Tours, Family Tours, Honeymoon Tours, Corporate Tours, Student Group Tours, Leisure Tours, Trekking Tours, and Biker Tours.
+    "At Tripvision.in, we turn your dream holidays into unforgettable memories. As India's leading travel agency, we offer personalized, budget-friendly travel experiences — whether you're seeking scenic hill stations, tropical island retreats, or spiritual journeys across the subcontinent.",
+  overview: `Tripvision.in is a trusted online travel booking service and holiday planner for the nation. Whether you're searching for a 'travel agency near me', 'book holiday packages online', or the 'best travel deals', our goal is to provide you with convenience, expert advice, and the best value for your money.
 
-Founded in 1994, Trip Vision was created with a clear vision: to redefine travel experiences by delivering excellence, trust, and unforgettable memories. Over the years, our expertise has grown to cater to both seasoned travelers and those discovering the world for the first time.`,
+We are a trusted source for booking any type of vacation throughout India. From budget-friendly holiday package tours to luxury travel packages, we cater to every travel dream and every budget consideration.
+
+Founded in 1994 and headquartered in Mumbai, Tripvision has grown to become one of India's most trusted travel companies — offering Group Tours, Family Tours, Honeymoon Tours, Corporate Tours, Student Group Tours, Leisure Tours, Trekking Tours, and Biker Tours.`,
   location:
     "You can find us at J.S.S Road, Marine Lines, near Metro Cinema, Mumbai. Visit us and let's start planning your next adventure.",
-  cta: "Let's turn your travel dreams into unforgettable memories—contact us now to get started.",
+  cta: "Ready to explore India or the world? Whether you're searching for the best travel agency in India or the perfect tour package online, Tripvision.in has your adventures covered. Let's get started!",
 };
 
-// Tour Types
 export const TOUR_TYPES = [
   "Group Tours",
   "Family Tours",

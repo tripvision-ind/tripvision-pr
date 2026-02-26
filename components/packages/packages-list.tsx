@@ -4,10 +4,17 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { Clock, MapPin, Star } from "lucide-react";
+import { Clock, MapPin, Star, CalendarDays } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
+
+interface PackageDate {
+  id: string;
+  startDate: string;
+  endDate?: string | null;
+  label?: string | null;
+}
 
 interface Package {
   id: string;
@@ -18,6 +25,7 @@ interface Package {
   startingPrice: number;
   discountedPrice?: number | null;
   category: string;
+  priceLabel?: string | null;
   destinations: {
     destination: {
       name: string;
@@ -36,6 +44,7 @@ interface Package {
       exchangeRate: number;
     };
   }[];
+  dates?: PackageDate[];
 }
 
 interface PackagesListProps {
@@ -103,7 +112,7 @@ export function PackagesList({
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
                 />
-                {pkg.discountedPrice && (
+                {pkg.discountedPrice && pkg.startingPrice > 0 && (
                   <Badge className="absolute top-4 left-4 bg-destructive text-white">
                     {Math.round(
                       ((pkg.startingPrice - pkg.discountedPrice) /
@@ -137,36 +146,53 @@ export function PackagesList({
                   {pkg.title}
                 </h3>
 
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-sm text-muted-foreground">
-                      Starting from
-                    </span>
-                    <div className="flex items-center gap-2">
-                      {(() => {
-                        // Use package prices if available, otherwise fall back to startingPrice
-                        const packagePrice = pkg.prices?.[0];
-                        const displayPrice =
-                          packagePrice?.discountedPrice ||
-                          packagePrice?.price ||
-                          pkg.discountedPrice ||
-                          pkg.startingPrice;
-                        const originalPrice =
-                          packagePrice?.price || pkg.startingPrice;
-                        const currency = packagePrice?.currency || {
-                          code: "INR",
-                          symbol: "₹",
-                        };
+                {(() => {
+                  const packagePrice = pkg.prices?.[0];
+                  const displayPrice =
+                    packagePrice?.discountedPrice ||
+                    packagePrice?.price ||
+                    pkg.discountedPrice ||
+                    pkg.startingPrice;
+                  const originalPrice =
+                    packagePrice?.price || pkg.startingPrice;
+                  const currency = packagePrice?.currency || {
+                    code: "INR",
+                    symbol: "₹",
+                  };
 
-                        const hasDiscount =
-                          (packagePrice?.discountedPrice &&
-                            packagePrice.discountedPrice <
-                              packagePrice.price) ||
-                          (pkg.discountedPrice &&
-                            pkg.discountedPrice < pkg.startingPrice);
+                  const hasDiscount =
+                    (packagePrice?.discountedPrice &&
+                      packagePrice.discountedPrice < packagePrice.price) ||
+                    (pkg.discountedPrice &&
+                      pkg.discountedPrice < pkg.startingPrice);
 
-                        return hasDiscount ? (
-                          <>
+                  const hasPrice = displayPrice > 0;
+
+                  return hasPrice ? (
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="text-sm text-muted-foreground">
+                          Starting from
+                        </span>
+                        <div className="flex items-center gap-2">
+                          {hasDiscount ? (
+                            <>
+                              <span className="text-xl font-bold text-primary">
+                                {formatPrice(
+                                  displayPrice,
+                                  currency.code,
+                                  currency.symbol,
+                                )}
+                              </span>
+                              <span className="text-sm text-muted-foreground line-through">
+                                {formatPrice(
+                                  originalPrice,
+                                  currency.code,
+                                  currency.symbol,
+                                )}
+                              </span>
+                            </>
+                          ) : (
                             <span className="text-xl font-bold text-primary">
                               {formatPrice(
                                 displayPrice,
@@ -174,31 +200,58 @@ export function PackagesList({
                                 currency.symbol,
                               )}
                             </span>
-                            <span className="text-sm text-muted-foreground line-through">
-                              {formatPrice(
-                                originalPrice,
-                                currency.code,
-                                currency.symbol,
-                              )}
-                            </span>
-                          </>
-                        ) : (
-                          <span className="text-xl font-bold text-primary">
-                            {formatPrice(
-                              displayPrice,
-                              currency.code,
-                              currency.symbol,
+                          )}
+                        </div>
+                        {pkg.priceLabel && (
+                          <span className="text-xs text-muted-foreground">
+                            {pkg.priceLabel}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ) : null;
+                })()}
+
+                {/* Available Dates */}
+                {pkg.dates && pkg.dates.length > 0 && (
+                  <div className="mt-3 pt-3 border-t">
+                    <div className="flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400 mb-2">
+                      <CalendarDays className="size-3.5" />
+                      <span className="font-semibold">Available Dates</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {pkg.dates.slice(0, 3).map((d, i) => {
+                        const start = new Date(d.startDate);
+                        const end = d.endDate ? new Date(d.endDate) : null;
+                        const fmt: Intl.DateTimeFormatOptions = {
+                          day: "numeric",
+                          month: "short",
+                        };
+                        return (
+                          <span
+                            key={i}
+                            className="inline-flex items-center gap-1 rounded-md border border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700 px-2 py-0.5 text-[11px] font-semibold text-amber-700 dark:text-amber-400"
+                          >
+                            <CalendarDays className="size-3 shrink-0" />
+                            {start.toLocaleDateString("en-IN", fmt)}
+                            {end &&
+                              ` – ${end.toLocaleDateString("en-IN", fmt)}`}
+                            {d.label && (
+                              <span className="ml-0.5 text-amber-500 font-normal">
+                                · {d.label}
+                              </span>
                             )}
                           </span>
                         );
-                      })()}
+                      })}
+                      {pkg.dates.length > 3 && (
+                        <span className="inline-flex items-center rounded-md border border-amber-200 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-800 px-2 py-0.5 text-[11px] font-semibold text-amber-600 dark:text-amber-500">
+                          +{pkg.dates.length - 3} more
+                        </span>
+                      )}
                     </div>
                   </div>
-                  {/* <div className="flex items-center gap-1 text-yellow-500">
-                    <Star className="size-4 fill-current" />
-                    <span className="text-sm font-medium">4.8</span>
-                  </div> */}
-                </div>
+                )}
               </div>
             </Link>
           </motion.div>

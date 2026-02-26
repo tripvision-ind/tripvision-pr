@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Star, Users, MessageCircle, TrendingUp } from "lucide-react";
 
@@ -13,13 +14,16 @@ interface TestimonialsHeroProps {
 
 export function TestimonialsHero({ stats }: TestimonialsHeroProps) {
   return (
-    <section className="bg-brand-dark py-16 lg:py-24 relative overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-0 left-0 w-32 h-32 border border-primary rounded-full"></div>
-        <div className="absolute top-16 right-16 w-16 h-16 bg-primary/20 rounded-full"></div>
-        <div className="absolute bottom-16 left-1/4 w-24 h-24 border border-primary/30 rounded-full"></div>
-      </div>
+    <section className="relative py-16 lg:py-24 overflow-hidden">
+      {/* Background Image */}
+      <Image
+        src="https://images.unsplash.com/photo-1530789253388-582c481c54b0?w=1920&q=80"
+        alt="Traveler Stories"
+        fill
+        className="object-cover"
+        priority
+      />
+      <div className="absolute inset-0 bg-black/60" />
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-12">

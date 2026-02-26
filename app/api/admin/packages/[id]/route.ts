@@ -29,6 +29,7 @@ export async function GET(
         policies: true,
         activities: true,
         prices: { include: { currency: true } },
+        dates: { orderBy: { startDate: "asc" } },
       },
     });
 
@@ -86,6 +87,7 @@ export async function PUT(
       policies,
       activities,
       prices,
+      bookingDates,
     } = body;
 
     // Check if slug is unique (excluding current package)
@@ -99,12 +101,13 @@ export async function PUT(
       );
     }
 
-    // Get the starting price from prices array
     const startingPrice = prices?.length > 0 ? parseFloat(prices[0].price) : 0;
     const discountedPrice =
       prices?.length > 0 && prices[0].discountedPrice
         ? parseFloat(prices[0].discountedPrice)
         : null;
+
+    const priceLabel = body.priceLabel || null;
 
     // Delete all related data first
     await prisma.$transaction([
@@ -121,6 +124,7 @@ export async function PUT(
       prisma.packagePolicy.deleteMany({ where: { packageId: id } }),
       prisma.packageActivity.deleteMany({ where: { packageId: id } }),
       prisma.packagePrice.deleteMany({ where: { packageId: id } }),
+      prisma.packageDate.deleteMany({ where: { packageId: id } }),
     ]);
 
     // Update package with new data
@@ -138,6 +142,7 @@ export async function PUT(
         durationNights: durationNights || 0,
         startingPrice,
         discountedPrice,
+        priceLabel,
         category: category || "DOMESTIC",
         isSpecial: isSpecial ?? false,
         isFeatured: isFeatured ?? false,
@@ -282,6 +287,23 @@ export async function PUT(
               ),
           },
         }),
+        ...(bookingDates?.length > 0 && {
+          dates: {
+            create: bookingDates
+              .filter((d: { startDate: string }) => d.startDate)
+              .map(
+                (d: {
+                  startDate: string;
+                  endDate?: string;
+                  label?: string;
+                }) => ({
+                  startDate: new Date(d.startDate),
+                  endDate: d.endDate ? new Date(d.endDate) : null,
+                  label: d.label || null,
+                }),
+              ),
+          },
+        }),
       },
       include: {
         destinations: true,
@@ -295,6 +317,7 @@ export async function PUT(
         policies: true,
         activities: true,
         prices: { include: { currency: true } },
+        dates: { orderBy: { startDate: "asc" } },
       },
     });
 

@@ -20,6 +20,7 @@ interface Package {
   startingPrice: number;
   discountedPrice?: number | null;
   category: string;
+  priceLabel?: string | null;
   destinations?: { destination: { name: string } }[];
   isSpecial?: boolean;
   prices?: {
@@ -119,31 +120,33 @@ export function FeaturedPackages({ packages }: FeaturedPackagesProps) {
 
                       {/* Price */}
                       <div className="absolute bottom-4 left-4">
-                        <div className="flex items-baseline gap-2">
-                          {(() => {
-                            // Use package prices if available, otherwise fall back to startingPrice
-                            const packagePrice = pkg.prices?.[0];
-                            const displayPrice =
-                              packagePrice?.discountedPrice ||
-                              packagePrice?.price ||
-                              pkg.discountedPrice ||
-                              pkg.startingPrice;
-                            const originalPrice =
-                              packagePrice?.price || pkg.startingPrice;
-                            const currency = packagePrice?.currency || {
-                              code: "INR",
-                              symbol: "₹",
-                            };
+                        {(() => {
+                          // Use package prices if available, otherwise fall back to startingPrice
+                          const packagePrice = pkg.prices?.[0];
+                          const displayPrice =
+                            packagePrice?.discountedPrice ||
+                            packagePrice?.price ||
+                            pkg.discountedPrice ||
+                            pkg.startingPrice;
+                          const originalPrice =
+                            packagePrice?.price || pkg.startingPrice;
+                          const currency = packagePrice?.currency || {
+                            code: "INR",
+                            symbol: "₹",
+                          };
 
-                            const hasDiscount =
-                              (packagePrice?.discountedPrice &&
-                                packagePrice.discountedPrice <
-                                  packagePrice.price) ||
-                              (pkg.discountedPrice &&
-                                pkg.discountedPrice < pkg.startingPrice);
+                          const hasDiscount =
+                            (packagePrice?.discountedPrice &&
+                              packagePrice.discountedPrice <
+                                packagePrice.price) ||
+                            (pkg.discountedPrice &&
+                              pkg.discountedPrice < pkg.startingPrice);
 
-                            return (
-                              <>
+                          const hasPrice = displayPrice > 0;
+
+                          return hasPrice ? (
+                            <>
+                              <div className="flex items-baseline gap-2">
                                 <span className="text-white text-2xl font-bold">
                                   {formatPrice(
                                     displayPrice,
@@ -160,13 +163,15 @@ export function FeaturedPackages({ packages }: FeaturedPackagesProps) {
                                     )}
                                   </span>
                                 )}
-                              </>
-                            );
-                          })()}
-                        </div>
-                        <span className="text-white/80 text-sm">
-                          per person
-                        </span>
+                              </div>
+                              {pkg.priceLabel && (
+                                <span className="text-white/80 text-sm">
+                                  {pkg.priceLabel}
+                                </span>
+                              )}
+                            </>
+                          ) : null;
+                        })()}
                       </div>
                     </div>
 

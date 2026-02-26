@@ -17,6 +17,7 @@ interface Package {
   startingPrice: number;
   discountedPrice?: number | null;
   category: string;
+  priceLabel?: string | null;
   destinations: {
     destination: {
       name: string;
@@ -103,7 +104,7 @@ export function SpecialPackages({
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-110"
                   />
-                  {pkg.discountedPrice && (
+                  {pkg.discountedPrice && pkg.startingPrice > 0 && (
                     <Badge className="absolute top-4 left-4 bg-destructive text-white">
                       {Math.round(
                         ((pkg.startingPrice - pkg.discountedPrice) /
@@ -137,36 +138,53 @@ export function SpecialPackages({
                     {pkg.title}
                   </h3>
 
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="text-sm text-muted-foreground">
-                        Starting from
-                      </span>
-                      <div className="flex items-center gap-2">
-                        {(() => {
-                          // Use package prices if available, otherwise fall back to startingPrice
-                          const packagePrice = pkg.prices?.[0];
-                          const displayPrice =
-                            packagePrice?.discountedPrice ||
-                            packagePrice?.price ||
-                            pkg.discountedPrice ||
-                            pkg.startingPrice;
-                          const originalPrice =
-                            packagePrice?.price || pkg.startingPrice;
-                          const currency = packagePrice?.currency || {
-                            code: "INR",
-                            symbol: "₹",
-                          };
+                  {(() => {
+                    const packagePrice = pkg.prices?.[0];
+                    const displayPrice =
+                      packagePrice?.discountedPrice ||
+                      packagePrice?.price ||
+                      pkg.discountedPrice ||
+                      pkg.startingPrice;
+                    const originalPrice =
+                      packagePrice?.price || pkg.startingPrice;
+                    const currency = packagePrice?.currency || {
+                      code: "INR",
+                      symbol: "₹",
+                    };
 
-                          const hasDiscount =
-                            (packagePrice?.discountedPrice &&
-                              packagePrice.discountedPrice <
-                                packagePrice.price) ||
-                            (pkg.discountedPrice &&
-                              pkg.discountedPrice < pkg.startingPrice);
+                    const hasDiscount =
+                      (packagePrice?.discountedPrice &&
+                        packagePrice.discountedPrice < packagePrice.price) ||
+                      (pkg.discountedPrice &&
+                        pkg.discountedPrice < pkg.startingPrice);
 
-                          return hasDiscount ? (
-                            <>
+                    const hasPrice = displayPrice > 0;
+
+                    return hasPrice ? (
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-sm text-muted-foreground">
+                            Starting from
+                          </span>
+                          <div className="flex items-center gap-2">
+                            {hasDiscount ? (
+                              <>
+                                <span className="text-xl font-bold text-primary">
+                                  {formatPrice(
+                                    displayPrice,
+                                    currency.code,
+                                    currency.symbol,
+                                  )}
+                                </span>
+                                <span className="text-sm text-muted-foreground line-through">
+                                  {formatPrice(
+                                    originalPrice,
+                                    currency.code,
+                                    currency.symbol,
+                                  )}
+                                </span>
+                              </>
+                            ) : (
                               <span className="text-xl font-bold text-primary">
                                 {formatPrice(
                                   displayPrice,
@@ -174,31 +192,17 @@ export function SpecialPackages({
                                   currency.symbol,
                                 )}
                               </span>
-                              <span className="text-sm text-muted-foreground line-through">
-                                {formatPrice(
-                                  originalPrice,
-                                  currency.code,
-                                  currency.symbol,
-                                )}
-                              </span>
-                            </>
-                          ) : (
-                            <span className="text-xl font-bold text-primary">
-                              {formatPrice(
-                                displayPrice,
-                                currency.code,
-                                currency.symbol,
-                              )}
+                            )}
+                          </div>
+                          {pkg.priceLabel && (
+                            <span className="text-xs text-muted-foreground">
+                              {pkg.priceLabel}
                             </span>
-                          );
-                        })()}
+                          )}
+                        </div>
                       </div>
-                    </div>
-                    {/* <div className="flex items-center gap-1 text-yellow-500">
-                      <Star className="size-4 fill-current" />
-                      <span className="text-sm font-medium">4.8</span>
-                    </div> */}
-                  </div>
+                    ) : null;
+                  })()}
                 </div>
               </Link>
             </motion.div>
