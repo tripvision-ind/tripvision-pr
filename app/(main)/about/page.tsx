@@ -52,14 +52,62 @@ export default function AboutPage() {
               </div>
               <p className="mt-6 text-primary font-medium">{ABOUT.cta}</p>
             </div>
-            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden">
-              <Image
-                src="/about-team.jpg"
-                alt="TripVision Team"
-                fill
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent" />
+            <div className="relative">
+              {/* Main large image */}
+              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl">
+                <Image
+                  src="https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=800&q=80"
+                  alt="India - Taj Mahal"
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                <span className="absolute bottom-4 left-4 text-white text-sm font-semibold bg-black/40 px-3 py-1 rounded-full">
+                  Taj Mahal, Agra
+                </span>
+              </div>
+
+              {/* Small grid overlay — bottom right */}
+              <div className="absolute -bottom-5 -right-3 sm:-right-6 grid grid-cols-2 gap-2 w-36 sm:w-44">
+                <div className="relative aspect-square rounded-xl overflow-hidden shadow-lg border-2 border-background">
+                  <Image
+                    src="https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=300&q=80"
+                    alt="Kerala Backwaters"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="relative aspect-square rounded-xl overflow-hidden shadow-lg border-2 border-background">
+                  <Image
+                    src="https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?w=300&q=80"
+                    alt="Leh Ladakh"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="relative aspect-square rounded-xl overflow-hidden shadow-lg border-2 border-background">
+                  <Image
+                    src="https://images.unsplash.com/photo-1477587458883-47145ed94245?w=300&q=80"
+                    alt="Varanasi Ghats"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="relative aspect-square rounded-xl overflow-hidden shadow-lg border-2 border-background">
+                  <Image
+                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&q=80"
+                    alt="Rajasthan"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              </div>
+
+              {/* Experience badge */}
+              <div className="absolute -top-4 -left-4 sm:-left-6 bg-primary text-primary-foreground px-5 py-4 rounded-2xl shadow-lg text-center">
+                <div className="text-3xl font-bold leading-none">30+</div>
+                <div className="text-xs mt-0.5">Years of Excellence</div>
+              </div>
             </div>
           </div>
         </div>
