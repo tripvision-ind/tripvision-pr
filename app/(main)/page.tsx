@@ -1,4 +1,11 @@
 import { prisma } from "@/lib/db";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  verification: {
+    google: "vIxKFbyaIO_XPkPbIbEjLxI4XQ2TIDXYO4-5P3aSiDo",
+  },
+};
 
 export const dynamic = "force-dynamic";
 
